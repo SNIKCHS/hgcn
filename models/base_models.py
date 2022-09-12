@@ -22,13 +22,13 @@ class BaseModel(nn.Module):
     def __init__(self, args):
         super(BaseModel, self).__init__()
         self.manifold_name = args.manifold
-        if args.c is not None:
+        if args.c is not None: # 双曲半径，设置为None表示可训练的曲率
             self.c = torch.tensor([args.c])
             if not args.cuda == -1:
                 self.c = self.c.to(args.device)
         else:
             self.c = nn.Parameter(torch.Tensor([1.]))
-        self.manifold = getattr(manifolds, self.manifold_name)()
+        self.manifold = getattr(manifolds, self.manifold_name)()  # 选择相应的流形
         if self.manifold.name == 'Hyperboloid':
             args.feat_dim = args.feat_dim + 1
         self.nnodes = args.n_nodes
@@ -63,8 +63,9 @@ class NCModel(BaseModel):
             self.f1_average = 'micro'
         else:
             self.f1_average = 'binary'
-        if args.pos_weight:
-            self.weights = torch.Tensor([1., 1. / data['labels'][idx_train].mean()])
+        if args.pos_weight:  # 是否在节点中增加正类的权重
+            # self.weights = torch.Tensor([1., 1. / data['labels'][idx_train].mean()])
+            pass
         else:
             self.weights = torch.Tensor([1.] * args.n_classes)
         if not args.cuda == -1:
@@ -74,7 +75,7 @@ class NCModel(BaseModel):
         output = self.decoder.decode(h, adj)
         return F.log_softmax(output[idx], dim=1)
 
-    def compute_metrics(self, embeddings, data, split):
+    def compute_metrics(self, embeddings, data, split):  # 计算loss，acc等
         idx = data[f'idx_{split}']
         output = self.decode(embeddings, data['adj_train_norm'], idx)
         loss = F.nll_loss(output, data['labels'][idx], self.weights)
@@ -96,7 +97,7 @@ class LPModel(BaseModel):
 
     def __init__(self, args):
         super(LPModel, self).__init__(args)
-        self.dc = FermiDiracDecoder(r=args.r, t=args.t)
+        self.dc = FermiDiracDecoder(r=args.r, t=args.t)  # 类似于sigmoid的输出，r,t为超参数
         self.nb_false_edges = args.nb_false_edges
         self.nb_edges = args.nb_edges
 

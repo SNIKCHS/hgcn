@@ -20,16 +20,17 @@ class Manifold(object):
         """Converts Euclidean Gradient to Riemannian Gradients."""
         raise NotImplementedError
 
+    """proj,proj_tan,proj_tan0 约束嵌入和切向量保持在流形和切空间上"""
     def proj(self, p, c):
-        """Projects point p on the manifold."""
+        """Projects point p on the manifold.  把p（欧式向量）投影到p的切空间中"""
         raise NotImplementedError
 
     def proj_tan(self, u, p, c):
-        """Projects u on the tangent space of p."""
+        """Projects u on the tangent space of p. 把u（欧式向量）投影到p的切空间中"""
         raise NotImplementedError
 
     def proj_tan0(self, u, c):
-        """Projects u on the tangent space of the origin."""
+        """Projects u on the tangent space of the origin. 把u（欧式向量）投影到原点的切空间中"""
         raise NotImplementedError
 
     def expmap(self, u, p, c):

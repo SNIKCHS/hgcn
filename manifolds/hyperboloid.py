@@ -49,7 +49,7 @@ class Hyperboloid(Manifold):
         mask[:, 0] = 0
         vals = torch.zeros_like(x)
         vals[:, 0:1] = torch.sqrt(torch.clamp(K + y_sqnorm, min=self.eps[x.dtype]))
-        return vals + mask * x
+        return vals + mask * x   # mask * x = x1:d
 
     def proj_tan(self, u, x, c):
         K = 1. / c
@@ -67,6 +67,9 @@ class Hyperboloid(Manifold):
         vals[:, 0:1] = narrowed
         return u - vals
 
+    """
+    把u从x的切空间指数映射到流形
+    """
     def expmap(self, u, x, c):
         K = 1. / c
         sqrtK = K ** 0.5
@@ -113,6 +116,10 @@ class Hyperboloid(Manifold):
         return res
 
     def mobius_add(self, x, y, c):
+        """
+        x:被加数
+        y:偏差
+        """
         u = self.logmap0(y, c)
         v = self.ptransp0(x, u, c)
         return self.expmap(v, x, c)
@@ -130,6 +137,9 @@ class Hyperboloid(Manifold):
         res = u - alpha * (logxy + logyx)
         return self.proj_tan(res, y, c)
 
+    """
+    把u从原点的切空间平行传输到x的切空间
+    """
     def ptransp0(self, x, u, c):
         K = 1. / c
         sqrtK = K ** 0.5

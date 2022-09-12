@@ -56,8 +56,7 @@ def train(args):
         args.nb_edges = len(data['train_edges'])
         if args.task == 'lp':
             Model = LPModel
-        else:
-            Model = RECModel
+
             # No validation for reconstruction task
             args.eval_freq = args.epochs + 1
 

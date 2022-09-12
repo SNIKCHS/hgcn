@@ -99,7 +99,7 @@ class HGCN(Encoder):
         super(HGCN, self).__init__(c)
         self.manifold = getattr(manifolds, args.manifold)()
         assert args.num_layers > 1
-        dims, acts, self.curvatures = hyp_layers.get_dim_act_curv(args)
+        dims, acts, self.curvatures = hyp_layers.get_dim_act_curv(args)  # 从参数中获取每一层的维度、激活和曲率
         self.curvatures.append(self.c)
         hgc_layers = []
         for i in range(len(dims) - 1):
@@ -107,7 +107,7 @@ class HGCN(Encoder):
             in_dim, out_dim = dims[i], dims[i + 1]
             act = acts[i]
             hgc_layers.append(
-                    hyp_layers.HyperbolicGraphConvolution(
+                    hyp_layers.HyperbolicGraphConvolution(  # 设置每一层的卷积操作 return h, adj
                             self.manifold, in_dim, out_dim, c_in, c_out, args.dropout, act, args.bias, args.use_att, args.local_agg
                     )
             )
@@ -115,9 +115,9 @@ class HGCN(Encoder):
         self.encode_graph = True
 
     def encode(self, x, adj):
-        x_tan = self.manifold.proj_tan0(x, self.curvatures[0])
-        x_hyp = self.manifold.expmap0(x_tan, c=self.curvatures[0])
-        x_hyp = self.manifold.proj(x_hyp, c=self.curvatures[0])
+        x_tan = self.manifold.proj_tan0(x, self.curvatures[0])  # 把x（欧式向量）投影到原点的切空间
+        x_hyp = self.manifold.expmap0(x_tan, c=self.curvatures[0])  # 在原点把x_tan指数映射
+        x_hyp = self.manifold.proj(x_hyp, c=self.curvatures[0])  # 约束x_hyp在流形上
         return super(HGCN, self).encode(x_hyp, adj)
 
 
