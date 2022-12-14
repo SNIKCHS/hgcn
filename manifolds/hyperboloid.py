@@ -82,7 +82,9 @@ class Hyperboloid(Manifold):
         
     def logmap(self, x, y, c):
         K = 1. / c
+
         xy = torch.clamp(self.minkowski_dot(x, y) + K, max=-self.eps[x.dtype]) - K
+
         u = y + xy * x * c
         normu = self.minkowski_norm(u)
         normu = torch.clamp(normu, min=self.min_norm)

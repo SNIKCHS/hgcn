@@ -13,6 +13,7 @@ class DenseAtt(nn.Module):
         self.in_features = in_features
 
     def forward (self, x, adj):
+
         n = x.size(0)
         # n x 1 x d
         x_left = torch.unsqueeze(x, 1)

@@ -91,6 +91,7 @@ def train(args):
         t = time.time()
         model.train()
         optimizer.zero_grad()
+
         embeddings = model.encode(data['features'], data['adj_train_norm'])
         train_metrics = model.compute_metrics(embeddings, data, 'train')
         train_metrics['loss'].backward()

@@ -38,6 +38,8 @@ class BaseModel(nn.Module):
         if self.manifold.name == 'Hyperboloid':
             o = torch.zeros_like(x)
             x = torch.cat([o[:, 0:1], x], dim=1)
+
+
         h = self.encoder.encode(x, adj)
         return h
 
